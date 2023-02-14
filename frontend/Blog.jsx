@@ -1,32 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-const api = axios.create({ baseURL: "http://localhost:3000" });
+import React from "react";
+import { useQuery } from "react-query";
+import api from "./lib/api";
 
 export default function Blog() {
-    const [posts, setPosts] = useState([]);
+    const { data: posts } = useQuery(["allPosts"], api.posts.getAll);
 
     const maxLength = 20;
-    useEffect(() => {
-        api
-            .get("/posts")
-            .then((response) => {
-                const { data, success, error } = response.data;
-                if (error) {
-                    console.error(error);
-                    return;
-                }
-
-                if (success) {
-                    setPosts(data);
-                }
-            })
-            .catch(console.error);
-    }, []);
 
     return (
         <div style={{ flexGrow: 1 }}>
-            {posts.map((post) => {
+            {posts?.map((post) => {
                 const isTrunc = post.content.length > maxLength;
                 const content = post.content.slice(0, maxLength);
                 return (
